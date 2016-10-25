@@ -260,6 +260,11 @@ class CloudinaryStreamWrapper implements DrupalStreamWrapperInterface {
       $public_id = preg_replace('/(.*)\.(jpe?g|png|gif|bmp)$/i', '\1', $public_id);
     }
 
+    elseif (cloudinary_stream_wrapper_is_video($public_id)) {
+      $this->resourceType = CLOUDINARY_STREAM_WRAPPER_RESOURCE_VIDEO;
+      $public_id = preg_replace('/(.*)\.(mp4|webm|flv|mov|ogv|3gp|3g2|wmv|mpeg|flv|mkv|avi)$/i', '\1', $public_id);
+    }
+
     return $public_id;
   }
 
@@ -637,7 +642,18 @@ class CloudinaryStreamWrapper implements DrupalStreamWrapperInterface {
     }
 
     // Return false if different resource type.
-    $to_resource_type = cloudinary_stream_wrapper_is_image($to_uri) ? CLOUDINARY_STREAM_WRAPPER_RESOURCE_IMAGE : CLOUDINARY_STREAM_WRAPPER_RESOURCE_RAW;
+
+    if (cloudinary_stream_wrapper_is_image($to_uri)) {
+      $to_resource_type = CLOUDINARY_STREAM_WRAPPER_RESOURCE_IMAGE;
+    }
+
+    elseif (cloudinary_stream_wrapper_is_video($to_uri)) {
+      $to_resource_type = CLOUDINARY_STREAM_WRAPPER_RESOURCE_VIDEO;
+    }
+
+    else {
+      $to_resource_type = CLOUDINARY_STREAM_WRAPPER_RESOURCE_RAW;
+    }
 
     if ($from_resource['resource_type' != $to_resource_type]) {
       return FALSE;

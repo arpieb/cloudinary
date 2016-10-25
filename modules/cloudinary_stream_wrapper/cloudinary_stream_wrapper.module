@@ -31,6 +31,11 @@ define('CLOUDINARY_STREAM_WRAPPER_FOLDER_TAG_PREFIX', 'root/');
 define('CLOUDINARY_STREAM_WRAPPER_RESOURCE_IMAGE', 'image');
 
 /**
+ * The resource_type of video on Cloudinary.
+ */
+define('CLOUDINARY_STREAM_WRAPPER_RESOURCE_VIDEO', 'video');
+
+/**
  * The resource_type of none images on Cloudinary.
  */
 define('CLOUDINARY_STREAM_WRAPPER_RESOURCE_RAW', 'raw');
@@ -477,8 +482,9 @@ function cloudinary_stream_wrapper_load_folder($path) {
     // Load files in current path on Cloudinary.
     $tag = CLOUDINARY_STREAM_WRAPPER_FOLDER_TAG_PREFIX . $path;
     $image_files = cloudinary_stream_wrapper_load_folder_files($tag, array('resource_type' => CLOUDINARY_STREAM_WRAPPER_RESOURCE_IMAGE));
+    $video_files = cloudinary_stream_wrapper_load_folder_files($tag, array('resource_type' => CLOUDINARY_STREAM_WRAPPER_RESOURCE_VIDEO));
     $raw_files = cloudinary_stream_wrapper_load_folder_files($tag, array('resource_type' => CLOUDINARY_STREAM_WRAPPER_RESOURCE_RAW));
-    $files = array_merge($image_files, $raw_files);
+    $files = array_merge($image_files, $video_files, $raw_files);
 
     $resource = cloudinary_stream_wrapper_resource_folder_structure($path, $folders, $files);
     module_invoke_all('cloudinary_stream_wrapper_resource_loaded', $resource);
@@ -494,6 +500,13 @@ function cloudinary_stream_wrapper_load_folder($path) {
  */
 function cloudinary_stream_wrapper_is_image($uri) {
   return (bool) preg_match('/\.(jpe?g|png|gif|bmp|webp)$/i', $uri);
+}
+
+/**
+ * Check the file is an image or not.
+ */
+function cloudinary_stream_wrapper_is_video($uri) {
+  return (bool) preg_match('/\.(mp4|webm|flv|mov|ogv|3gp|3g2|wmv|mpeg|flv|mkv|avi)$/i', $uri);
 }
 
 /**
